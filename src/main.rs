@@ -6,6 +6,7 @@
 // use hex::decode;
 use std::net::UdpSocket;
 use std::str;
+use solana_sdk::nonce::state::Data;
 use tokio;
 
 pub fn main() {
@@ -41,15 +42,18 @@ pub fn main() {
                     match result {
                         Ok(shred) => {
                             println!("Shred: {:?}", shred);
-                            println!("{:?", shred.payload());
+                            println!("{:?}", shred.payload());
                             println!("Signature: {} ", shred.signature());
 
                             match shred.shred_type() {
                                 solana_ledger::shred::ShredType::Data => {
                                     println!("Shred Type: Data");
+                                    println!("Data: {:?}", Data);
+                                    
                                 }
                                 solana_ledger::shred::ShredType::Code => {
                                     println!("Shred Type: Code");
+                                    println!("Code: {:?}", Code);
                                 }
                                 // solana_ledger::shred::ShredType::LastInSlot => {
                                 //     println!("Shred Type: LastInSlot");
