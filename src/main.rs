@@ -37,7 +37,7 @@ pub fn main() {
                     
                     println!("Received from {}: {}", src_addr, received_data);
 
-                    let result: Result<solana_ledger::shred::Shred, solana_ledger::shred::Error> = solana_ledger::shred::Shred::new_from_serialized_shred(buf);
+                    let result: Result<solana_ledger::shred::Shred, solana_ledger::shred::Error>         =  solana_ledger::shred::Shred::new_from_serialized_shred(buf.to_vec()); 
                     match result {
                         Ok(shred) => {
                             println!("Shred: {:?}", shred);
