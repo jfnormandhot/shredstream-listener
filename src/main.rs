@@ -51,7 +51,7 @@ pub fn main() {
                             match shred.shred_type() {
                                 solana_ledger::shred::ShredType::Data => {
                                     println!("Shred Type: Data");
-                                    let deshred_entries: Vec<solana_entry::entry::Entry> = bincode::deserialize(&deshred_payload).unwrap();
+                                    let deshred_entries: Vec<solana_entry::entry::Entry> = bincode::deserialize(&shred.payload()).unwrap();
                                     
                                 }
                                 solana_ledger::shred::ShredType::Code => {
