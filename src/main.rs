@@ -1,169 +1,87 @@
-use std::net::{SocketAddr};
-//use std::time::Duration;
-use solana_streamer::{
-    sendmmsg::{batch_send, SendPktsError, },
-    streamer,
-    streamer::StreamerReceiveStats,
-};
-
-use shredstream_lister::socket::SocketAddrSpace;
-use shredstream_lister::recvmmsg::{recv_mmsg, NUM_RCVMMSGS};
-
-use {
-    // crate::{
-    //     recvmmsg::{recv_mmsg, NUM_RCVMMSGS},
-    //     socket::SocketAddrSpace,
-    // },
-    std::{
-        io::Result,
-        net::UdpSocket,
-        time::{Duration, Instant},
-    },
-};
+// use solana_sdk::{transaction::Transaction, signature::Signature};
+// use solana_sdk::*;
 
 
-pub use {
-    solana_perf::packet::{
-        to_packet_batches, PacketBatch, PacketBatchRecycler, NUM_PACKETS, PACKETS_PER_BATCH,
-    },
-    solana_sdk::packet::{Meta, Packet, PACKET_DATA_SIZE},
-};
+// use hex::FromHex;
+// use hex::decode;
+use std::net::UdpSocket;
+use std::str;
+use tokio;
 
-//use solana_sdk::packet::{Meta, Packet, PACKET_DATA_SIZE};
+pub fn main() {
 
-// pub mod shred {
-//     include!("../src/trace_shred.rs");
-// }
 
-pub fn recv_from(batch: &mut PacketBatch, socket: &UdpSocket, max_wait: Duration) -> Result<usize> {
-    let mut i = 0;
-    //DOCUMENTED SIDE-EFFECT
-    //Performance out of the IO without poll
-    //  * block on the socket until it's readable
-    //  * set the socket to non blocking
-    //  * read until it fails
-    //  * set it back to blocking before returning
-    socket.set_nonblocking(false)?;
-    println!("receiving on {}", socket.local_addr().unwrap());
-    let start = Instant::now();
-    loop {
-        batch.resize(
-            std::cmp::min(i + NUM_RCVMMSGS, PACKETS_PER_BATCH),
-            Packet::default(),
-        );
-        match recv_mmsg(socket, &mut batch[i..]) {
-            Err(_) if i > 0 => {
-                if start.elapsed() > max_wait {
-                    break;
-                }
-            }
+        // Bind to the local address and port (e.g., "127.0.0.1:34254")
+        let socket = match UdpSocket::bind("127.0.0.1:34254") {
+
+            Ok(socket) => socket,
             Err(e) => {
-                println!("recv_from err {:?}", e);
-                return Err(e);
+                eprintln!("Error binding to local address: {}", e);
+                return;
             }
-            Ok(npkts) => {
-                if i == 0 {
-                    socket.set_nonblocking(true)?;
+
+        };
+    
+        println!("Listening on port 2002...");
+    
+        // Buffer to store the incoming data
+        let mut buf = [0; 2048];
+    
+        loop {
+            // Receive data from the socket (blocking call)
+            match socket.recv_from(&mut buf) {
+                Ok((number_of_bytes, src_addr)) => {
+                    // Convert the received bytes to a string and print it
+                    let received_data = str::from_utf8(&buf[..number_of_bytes])
+                        .unwrap_or("<invalid UTF-8>");
+                    
+                    println!("Received from {}: {}", src_addr, received_data);
+
+
+                    let signature = &buf[..64]; // Equivalent to data[:64]
+
+                    // Shred variant (u8)
+                    let shred_variant = buf[64]; // Equivalent to data[64]
+                
+                    // Slot (u64, from bytes 65 to 72)
+                    let slot = u64::from_le_bytes(buf[65..73].try_into().unwrap()); // Equivalent to int.from_bytes(data[65:73], 'little')
+                
+                    // Index (u32, from bytes 73 to 76)
+                    let index = u32::from_le_bytes(buf[73..77].try_into().unwrap()); // Equivalent to int.from_bytes(data[73:77], 'little')
+                
+                    // Version (u16, from bytes 77 to 78)
+                    let version = u16::from_le_bytes(buf[77..79].try_into().unwrap()); // Equivalent to int.from_bytes(data[77:79], 'little')
+                
+                    // FEC set index (u32, from bytes 79 to 82)
+                    let fec_set_index = u32::from_le_bytes(buf[79..83].try_into().unwrap()); // Equivalent to int.from_bytes(data[79:83], 'little')
+
+                    println!("Signature: {:?}", signature);
+                    println!("Shred Variant: {}", shred_variant);
+                    println!("Slot: {}", slot);
+                    println!("Index: {}", index);
+                    println!("Version: {}", version);
+                    println!("FEC Set Index: {}", fec_set_index);
                 }
-                println!("got 111 {} packets", npkts);
-                println!("{:?}", npkts);
-                i += npkts;
-                // Try to batch into big enough buffers
-                // will cause less re-shuffling later on.
-                if start.elapsed() > max_wait || i >= PACKETS_PER_BATCH {
-                    break;
+                Err(e) => {
+                    eprintln!("Error receiving data: {}", e);
+                    break; // Optionally break the loop if there's an error
                 }
             }
         }
-    }
-    batch.truncate(i);
-    Ok(i)
-}
-
-fn main() -> std::io::Result<()> {
-
-
-    let recv_socket = UdpSocket::bind("127.0.0.1:2002").expect("bind");
-    let addr = recv_socket.local_addr().unwrap();
-    let send_socket = UdpSocket::bind("127.0.0.1:0").expect("bind");
-    let saddr = send_socket.local_addr().unwrap();
-
-    let packet_batch_size = 30;
-    let mut batch = PacketBatch::with_capacity(packet_batch_size);
-    batch.resize(packet_batch_size, Packet::default());
-
-    for m in batch.iter_mut() {
-        m.meta_mut().set_socket_addr(&addr);
-        m.meta_mut().size = PACKET_DATA_SIZE;
-    }
-    //send_to(&batch, &send_socket, &SocketAddrSpace::Unspecified).unwrap();
-
-    batch
-        .iter_mut()
-        .for_each(|pkt| *pkt.meta_mut() = Meta::default());
-    let recvd = recv_from(
-        &mut batch,
-        &recv_socket,
-        Duration::from_millis(1000000), // max_wait
-    )
-    .unwrap();
-
     
-    assert_eq!(recvd, batch.len());
 
+    //let service = ShredstreamService::default();
+    //let service = ShredstreamService::default();
+    //shredstream_lister::shredstream::shredstream_server::ShredstreamServer::new(Arc::new(T));
 
-    // let address: SocketAddr = "127.0.0.1:2002".parse().unwrap();
-    // let socket = UdpSocket::bind(address)?;
+        //solana_ledger::shred::Shred::new_from_serialized_shred(transaction_bytes);
 
-    // // Set socket to non-blocking mode
-    // socket.set_nonblocking(true)?;
+    //let signature = Signature::from(&signature_bytes[..]);
+    //let signature = Signature::from(&signature_bytes[..]);
 
-    // let mut buf = [0u8; 1024];
+    //let signature = Signature::from_bytes(&signature_bytes).unwrap();
 
-    // loop {
-    //     match socket.recv_from(&mut buf) {
-    //         Ok((amt, src)) => {
-    //             println!("Received {} bytes from {}: {:?}", amt, src, &buf[..amt]);
-    //         }
+    //println!(signature);
+    // shredstream_lister::packet::PacketBatch::decode(buf2);
 
-            
-
-    //         // shred::TraceShred::decode(&mut buf) => {
-    //         //     println!("Received a TraceShred: {:?}", shred::TraceShred::decode(&mut buf));
-    //         // }
-
-    //         // let mut packets = vec![Packet::default(); 32];
-    //         // let recv = recv_mmsg(reader, &mut packets[..]).await.unwrap();
-
-    //         Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
-    //             // No data available yet
-    //             println!("No data yet...");
-    //             std::thread::sleep(Duration::from_secs(1));
-    //         }
-    //         Err(e) => {
-    //             println!("Error: {}", e);
-    //             break;
-    //         }
-    //     }
-    // }
-
-    Ok(())
-
-    
-}
-
-pub fn send_to(
-    batch: &PacketBatch,
-    socket: &UdpSocket,
-    socket_addr_space: &SocketAddrSpace,
-) -> Result<()> {
-    for p in batch.iter() {
-        let addr = p.meta().socket_addr();
-        if socket_addr_space.check(&addr) {
-            if let Some(data) = p.data(..) {
-                socket.send_to(data, addr)?;
-            }
-        }
-    }
-    Ok(())
 }
