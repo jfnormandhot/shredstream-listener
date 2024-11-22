@@ -42,6 +42,42 @@ pub fn main() {
                         Ok(shred) => {
                             println!("Shred: {:?}", shred);
                             println!("{:?", shred.payload());
+                            println!("Signature: {} ", shred.signature());
+
+                            match shred.shred_type() {
+                                solana_ledger::shred::ShredType::Data => {
+                                    println!("Shred Type: Data");
+                                }
+                                solana_ledger::shred::ShredType::Code => {
+                                    println!("Shred Type: Code");
+                                }
+                                solana_ledger::shred::ShredType::LastInSlot => {
+                                    println!("Shred Type: LastInSlot");
+                                }
+                                solana_ledger::shred::ShredType::FirstInSlot => {
+                                    println!("Shred Type: FirstInSlot");
+                                }
+                                solana_ledger::shred::ShredType::LastInFECSet => {
+                                    println!("Shred Type: LastInFECSet");
+                                }
+                                solana_ledger::shred::ShredType::IntermediateInFECSet => {
+                                    println!("Shred Type: IntermediateInFECSet");
+                                }
+                                solana_ledger::shred::ShredType::DataProof => {
+                                    println!("Shred Type: DataProof");
+                                }
+                                solana_ledger::shred::ShredType::CodingProof => {
+                                    println!("Shred Type: CodingProof");
+                                }
+                                solana_ledger::shred::ShredType::Orphan => {
+                                    println!("Shred Type: Orphan");
+                                }
+
+
+
+                            }
+
+
                         }
                         Err(e) => {
                             eprintln!("Error parsing shred: {}", e);
