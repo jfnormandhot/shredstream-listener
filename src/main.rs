@@ -7,6 +7,7 @@
 use std::net::UdpSocket;
 use std::str;
 use solana_sdk::nonce::state::Data;
+use solana_entry;
 use tokio;
 
 pub fn main() {
@@ -45,10 +46,13 @@ pub fn main() {
                             println!("{:?}", shred.payload());
                             println!("Signature: {} ", shred.signature());
 
+
+                            //solana_ledger::shred::Shredder::deshred(shreds)
                             match shred.shred_type() {
                                 solana_ledger::shred::ShredType::Data => {
                                     println!("Shred Type: Data");
-                                                                        
+                                    let deshred_entries: Vec<solana_entry::entry::Entry> = bincode::deserialize(&deshred_payload).unwrap();
+                                    
                                 }
                                 solana_ledger::shred::ShredType::Code => {
                                     println!("Shred Type: Code");

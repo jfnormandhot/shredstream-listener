@@ -4194,6 +4194,7 @@ dependencies = [
  "prost 0.13.3",
  "reed-solomon-erasure",
  "rusqlite",
+ "solana-entry",
  "solana-ledger",
  "solana-perf",
  "solana-sdk",
