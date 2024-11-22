@@ -1,0 +1,17 @@
+[package]
+name = "shredstream_lister"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "main"
+path = "src/main.rs"
+
+[lib]
+name = "shredstream_lister"
+path = "src/lib.rs"
+
+[dependencies]
+solana-perf = "2.1.1"
+solana-sdk = "2.1.1"
+solana-streamer = "2.1.1"
