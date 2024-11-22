@@ -1,0 +1,24 @@
+[package]
+name = "shredstream_lister"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "main"
+path = "src/main.rs"
+
+[lib]
+name = "shredstream_lister"
+path = "src/lib.rs"
+
+[dependencies]
+itertools = "0.13.0"
+libc = "0.2.164"
+nix = "0.26.4"
+prost = "0.13.3"
+prost-types = "0.13.3"
+solana-perf = "2.1.1"
+solana-sdk = "2.1.1"
+solana-streamer = "2.1.1"
+tonic = "0.12.3"
+tonic-build = "0.12.3"
