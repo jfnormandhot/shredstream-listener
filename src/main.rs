@@ -48,12 +48,10 @@ pub fn main() {
                             match shred.shred_type() {
                                 solana_ledger::shred::ShredType::Data => {
                                     println!("Shred Type: Data");
-                                    println!("Data: {:?}", Data);
-                                    
+                                                                        
                                 }
                                 solana_ledger::shred::ShredType::Code => {
                                     println!("Shred Type: Code");
-                                    println!("Code: {:?}", Code);
                                 }
                                 // solana_ledger::shred::ShredType::LastInSlot => {
                                 //     println!("Shred Type: LastInSlot");
