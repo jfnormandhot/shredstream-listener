@@ -12,7 +12,7 @@ pub fn main() {
 
 
         // Bind to the local address and port (e.g., "127.0.0.1:34254")
-        let socket = match UdpSocket::bind("127.0.0.1:34254") {
+        let socket = match UdpSocket::bind("127.0.0.1:2002") {
 
             Ok(socket) => socket,
             Err(e) => {
@@ -37,6 +37,16 @@ pub fn main() {
                     
                     println!("Received from {}: {}", src_addr, received_data);
 
+                    let result: Result<solana_ledger::shred::Shred, solana_ledger::shred::Error> = solana_ledger::shred::Shred::new_from_serialized_shred(buf);
+                    match result {
+                        Ok(shred) => {
+                            println!("Shred: {:?}", shred);
+                            println!("{:?", shred.payload());
+                        }
+                        Err(e) => {
+                            eprintln!("Error parsing shred: {}", e);
+                        }
+                    }
 
                     let signature = &buf[..64]; // Equivalent to data[:64]
 
@@ -74,7 +84,7 @@ pub fn main() {
     //let service = ShredstreamService::default();
     //shredstream_lister::shredstream::shredstream_server::ShredstreamServer::new(Arc::new(T));
 
-        //solana_ledger::shred::Shred::new_from_serialized_shred(transaction_bytes);
+        
 
     //let signature = Signature::from(&signature_bytes[..]);
     //let signature = Signature::from(&signature_bytes[..]);
