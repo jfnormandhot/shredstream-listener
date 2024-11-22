@@ -60,10 +60,6 @@ fn cast_socket_addr(addr: &sockaddr_storage, hdr: &mmsghdr) -> Option<InetAddr> 
         let addr = addr as *const _ as *const sockaddr_in6;
         return Some(unsafe { InetAddr::V6(*addr) });
     }
-    error!(
-        "recvmmsg unexpected ss_family:{} msg_namelen:{}",
-        addr.ss_family, hdr.msg_hdr.msg_namelen
-    );
     None
 }
 

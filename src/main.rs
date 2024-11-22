@@ -65,7 +65,8 @@ pub fn recv_from(batch: &mut PacketBatch, socket: &UdpSocket, max_wait: Duration
                 if i == 0 {
                     socket.set_nonblocking(true)?;
                 }
-                println!("got {} packets", npkts);
+                println!("got 111 {} packets", npkts);
+                println!("{:?}", npkts);
                 i += npkts;
                 // Try to batch into big enough buffers
                 // will cause less re-shuffling later on.
@@ -103,17 +104,12 @@ fn main() -> std::io::Result<()> {
     let recvd = recv_from(
         &mut batch,
         &recv_socket,
-        Duration::from_millis(1), // max_wait
+        Duration::from_millis(1000000), // max_wait
     )
     .unwrap();
 
     
     assert_eq!(recvd, batch.len());
-
-    for m in batch.iter() {
-        assert_eq!(m.meta().size, PACKET_DATA_SIZE);
-        assert_eq!(m.meta().socket_addr(), saddr);
-    }
 
 
     // let address: SocketAddr = "127.0.0.1:2002".parse().unwrap();

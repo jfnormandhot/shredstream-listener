@@ -12,6 +12,9 @@ name = "shredstream_lister"
 path = "src/lib.rs"
 
 [dependencies]
+itertools = "0.13.0"
+libc = "0.2.164"
+nix = "0.26.4"
 solana-perf = "2.1.1"
 solana-sdk = "2.1.1"
 solana-streamer = "2.1.1"
