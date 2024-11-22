@@ -51,27 +51,27 @@ pub fn main() {
                                 solana_ledger::shred::ShredType::Code => {
                                     println!("Shred Type: Code");
                                 }
-                                solana_ledger::shred::ShredType::LastInSlot => {
-                                    println!("Shred Type: LastInSlot");
-                                }
-                                solana_ledger::shred::ShredType::FirstInSlot => {
-                                    println!("Shred Type: FirstInSlot");
-                                }
-                                solana_ledger::shred::ShredType::LastInFECSet => {
-                                    println!("Shred Type: LastInFECSet");
-                                }
-                                solana_ledger::shred::ShredType::IntermediateInFECSet => {
-                                    println!("Shred Type: IntermediateInFECSet");
-                                }
-                                solana_ledger::shred::ShredType::DataProof => {
-                                    println!("Shred Type: DataProof");
-                                }
-                                solana_ledger::shred::ShredType::CodingProof => {
-                                    println!("Shred Type: CodingProof");
-                                }
-                                solana_ledger::shred::ShredType::Orphan => {
-                                    println!("Shred Type: Orphan");
-                                }
+                                // solana_ledger::shred::ShredType::LastInSlot => {
+                                //     println!("Shred Type: LastInSlot");
+                                // }
+                                // solana_ledger::shred::ShredType::FirstInSlot => {
+                                //     println!("Shred Type: FirstInSlot");
+                                // }
+                                // solana_ledger::shred::ShredType::LastInFECSet => {
+                                //     println!("Shred Type: LastInFECSet");
+                                // }
+                                // solana_ledger::shred::ShredType::IntermediateInFECSet => {
+                                //     println!("Shred Type: IntermediateInFECSet");
+                                // }
+                                // solana_ledger::shred::ShredType::DataProof => {
+                                //     println!("Shred Type: DataProof");
+                                // }
+                                // solana_ledger::shred::ShredType::CodingProof => {
+                                //     println!("Shred Type: CodingProof");
+                                // }
+                                // solana_ledger::shred::ShredType::Orphan => {
+                                //     println!("Shred Type: Orphan");
+                                // }
 
 
 
