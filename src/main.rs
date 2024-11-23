@@ -66,7 +66,7 @@ pub fn main() {
                                     println!("Payload: {:?}", shred.payload());
 
                                     
-                                    let deshred_entries: Vec<solana_entry::entry::Entry> = bincode::deserialize(&shred.payload());
+                                    let deshred_entries:Result<_, Box<bincode::ErrorKind>>     = bincode::deserialize(&shred.payload());
 
                                     for entry in deshred_entries {
                                         println!("Entry: {:?}", entry);
