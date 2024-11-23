@@ -43,12 +43,15 @@ pub fn main() {
                     let result: Result<solana_ledger::shred::Shred, solana_ledger::shred::Error> =  solana_ledger::shred::Shred::new_from_serialized_shred(buf.to_vec()); 
                     match result {
                         Ok(shred) => {
+                            
                             println!("Shred: {:?}", shred);
                             println!("{:?}", shred.payload());
                             println!("Signature: {} ", shred.signature());
                             let transaction = deserialize::<Transaction>(&shred.payload());
+                            let entries: Vec<solana_entry::entry::Entry> = deserialize(&shred.payload())?;
 
                             println!("Transaction: {:?}", transaction);
+                            println!("Entries: {:?}", entries);
 
                             //solana_ledger::shred::Shredder::deshred(shreds)
                             match shred.shred_type() {
