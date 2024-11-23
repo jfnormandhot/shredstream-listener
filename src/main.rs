@@ -10,6 +10,7 @@ use solana_entry;
 use tokio;
 use solana_sdk::{transaction::Transaction, packet};
 use bincode::deserialize;
+use solana_entry::entry::Entry;
 
 pub fn main() {
 
