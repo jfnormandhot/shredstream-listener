@@ -48,6 +48,8 @@ pub fn main() {
                             println!("Signature: {} ", shred.signature());
                             let transaction = deserialize::<Transaction>(&shred.payload());
 
+                            println!("Transaction: {:?}", transaction);
+
                             //solana_ledger::shred::Shredder::deshred(shreds)
                             match shred.shred_type() {
                                 solana_ledger::shred::ShredType::Data => {
