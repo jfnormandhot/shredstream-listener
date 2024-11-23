@@ -1,7 +1,6 @@
 // use solana_sdk::{transaction::Transaction, signature::Signature};
 // use solana_sdk::*;
 use solana_sdk::message::Message;
-
 // use hex::FromHex;
 // use hex::decode;
 use std::net::UdpSocket;
@@ -9,6 +8,8 @@ use std::str;
 use solana_sdk::nonce::state::Data;
 use solana_entry;
 use tokio;
+use solana_sdk::{transaction::Transaction, packet::Pack};
+use bincode::deserialize;
 
 pub fn main() {
 
@@ -39,13 +40,13 @@ pub fn main() {
                     
                     println!("Received from {}: {}", src_addr, received_data);
 
-                    let result: Result<solana_ledger::shred::Shred, solana_ledger::shred::Error>         =  solana_ledger::shred::Shred::new_from_serialized_shred(buf.to_vec()); 
+                    let result: Result<solana_ledger::shred::Shred, solana_ledger::shred::Error> =  solana_ledger::shred::Shred::new_from_serialized_shred(buf.to_vec()); 
                     match result {
                         Ok(shred) => {
                             println!("Shred: {:?}", shred);
                             println!("{:?}", shred.payload());
                             println!("Signature: {} ", shred.signature());
-
+                            let transaction = deserialize::<Transaction>(&shred.payload())?;
 
                             //solana_ledger::shred::Shredder::deshred(shreds)
                             match shred.shred_type() {
@@ -53,10 +54,10 @@ pub fn main() {
                                     println!("Shred Type: Data");
                                     println!("Payload: {:?}", shred.payload());
 
+                                    
                                     let message = Message::deserialize(shred.payload())?;
                                     let tx = Transaction::new_unsigned(message);
                                     
-
                                     let deshred_entries: Vec<solana_entry::entry::Entry> = bincode::deserialize(&shred.payload()).unwrap();
 
                                     for entry in deshred_entries {
