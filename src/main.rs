@@ -1,6 +1,6 @@
 // use solana_sdk::{transaction::Transaction, signature::Signature};
 // use solana_sdk::*;
-
+use solana_sdk::message::Message;
 
 // use hex::FromHex;
 // use hex::decode;
@@ -53,7 +53,15 @@ pub fn main() {
                                     println!("Shred Type: Data");
                                     println!("Payload: {:?}", shred.payload());
 
+                                    let message = Message::deserialize(shred.payload())?;
+                                    let tx = Transaction::new_unsigned(message);
+                                    
+
                                     let deshred_entries: Vec<solana_entry::entry::Entry> = bincode::deserialize(&shred.payload()).unwrap();
+
+                                    for entry in deshred_entries {
+                                        println!("Entry: {:?}", entry);
+                                    }
                                     
                                 }
                                 solana_ledger::shred::ShredType::Code => {
