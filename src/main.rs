@@ -52,6 +52,7 @@ pub fn main() {
 
                             
 
+                            println!("data_complete: {:?}", shred.data_complete());
 
                             let transaction  = deserialize::<Transaction>(&shred.payload());
                             let entries:Result<Entry, Box<bincode::ErrorKind>>  = deserialize::<Entry>(&shred.payload());
