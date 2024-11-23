@@ -11,6 +11,7 @@ use tokio;
 use solana_sdk::{transaction::Transaction, packet};
 use bincode::deserialize;
 use solana_entry::entry::Entry;
+use solana_ledger::shred::{Shred, Error as ShredError};
 
 pub fn main() {
 
@@ -41,13 +42,17 @@ pub fn main() {
                     
                     println!("Received from {}: {}", src_addr, received_data);
 
-                    let result: Result<solana_ledger::shred::Shred, solana_ledger::shred::Error> =  solana_ledger::shred::Shred::new_from_serialized_shred(buf.to_vec()); 
+                    let result: Result<solana_ledger::shred::Shred, solana_ledger::shred::Error> =  Shred::new_from_serialized_shred(buf.to_vec()); 
+                    
                     match result {
                         Ok(shred) => {
                             
                             println!("Shred: {:?}", shred);
-                            println!("{:?}", shred.payload());
                             println!("Signature: {} ", shred.signature());
+
+                            
+
+
                             let transaction  = deserialize::<Transaction>(&shred.payload());
                             let entries:Result<Entry, Box<bincode::ErrorKind>>  = deserialize::<Entry>(&shred.payload());
 
@@ -61,7 +66,7 @@ pub fn main() {
                                     println!("Payload: {:?}", shred.payload());
 
                                     
-                                    let deshred_entries: Vec<solana_entry::entry::Entry> = bincode::deserialize(&shred.payload()).unwrap();
+                                    let deshred_entries: Vec<solana_entry::entry::Entry> = bincode::deserialize(&shred.payload());
 
                                     for entry in deshred_entries {
                                         println!("Entry: {:?}", entry);
