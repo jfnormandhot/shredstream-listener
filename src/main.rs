@@ -8,7 +8,7 @@ use std::str;
 use solana_sdk::nonce::state::Data;
 use solana_entry;
 use tokio;
-use solana_sdk::{transaction::Transaction, packet::Pack};
+use solana_sdk::{transaction::Transaction, packet};
 use bincode::deserialize;
 
 pub fn main() {
