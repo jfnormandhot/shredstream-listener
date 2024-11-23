@@ -49,7 +49,7 @@ pub fn main() {
                             println!("{:?}", shred.payload());
                             println!("Signature: {} ", shred.signature());
                             let transaction  = deserialize::<Transaction>(&shred.payload());
-                            let entries: Vec<solana_entry::entry::Entry> = deserialize::<Entry>(&shred.payload());
+                            let entries:Result<Entry, Box<bincode::ErrorKind>>  = deserialize::<Entry>(&shred.payload());
 
                             println!("Transaction: {:?}", transaction);
                             println!("Entries: {:?}", entries);
