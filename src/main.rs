@@ -46,7 +46,7 @@ pub fn main() {
                             println!("Shred: {:?}", shred);
                             println!("{:?}", shred.payload());
                             println!("Signature: {} ", shred.signature());
-                            let transaction = deserialize::<Transaction>(&shred.payload())?;
+                            let transaction = deserialize::<Transaction>(&shred.payload());
 
                             //solana_ledger::shred::Shredder::deshred(shreds)
                             match shred.shred_type() {
@@ -54,9 +54,6 @@ pub fn main() {
                                     println!("Shred Type: Data");
                                     println!("Payload: {:?}", shred.payload());
 
-                                    
-                                    let message = Message::deserialize(shred.payload())?;
-                                    let tx = Transaction::new_unsigned(message);
                                     
                                     let deshred_entries: Vec<solana_entry::entry::Entry> = bincode::deserialize(&shred.payload()).unwrap();
 
